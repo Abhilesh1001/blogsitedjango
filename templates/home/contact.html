@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Contact{% endblock title %}
+{% block contactactive %}active{% endblock %}
+{% block body %}
+    <div class="container">
+
+
+        <form action="/contact/" method="post">{% csrf_token %}
+        <div class="mb-3 my-4">
+            <label for="name" class="form-label">Email address</label>
+            <input type="text" name="name" class="form-control" id="name" placeholder="name">
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" name="email" class="form-control" id="email" placeholder="email">
+        </div>
+        <div class="mb-3">
+            <label for="phone" class="form-label">Phone</label>
+            <input type="text" name="phone" class="form-control" id="phone" placeholder="phone">
+        </div>
+        <div class="mb-3">
+            <label for="contant" class="form-label">Deacription</label>
+            <textarea name="content" class="form-control" id="content" placeholder="description" rows="3"></textarea>
+        </div>
+        <button type="submit" class="btn btn-success">Submit</button>
+    </form>
+    </div>
+{% endblock body %}

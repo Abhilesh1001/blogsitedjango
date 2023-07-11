@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block title %}Blog Post{% endblock title %}
+
+{% block css %}
+
+img{
+  width: 88px;
+}
+
+{% endblock %}
+{% block body %}
+
+{% load static %}
+{% load poll_extras %}
+<div class="container my-4">
+     <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+         <div class="col p-4 d-flex flex-column position-static">
+           <strong class="d-inline-block mb-2 text-primary">{{post.author}}</strong>
+           <h3 class="mb-0">{{post.title}}</h3>
+           <div class="mb-1 text-body-primary">{{post.timestamp}}</div>
+           <p class="card-text mb-auto">{{post.content}}</p>
+           <!-- <a href="/blog/{{post.slug}}" class="stretched-link">Continue reading</a>/ -->
+         </div>
+       </div>
+       </div>
+<div class="container">
+  <h2>Comment {{ comments.count }}</h2> 
+  {% if user.is_authenticated %}
+  <form action="/blog/postComment" method='post'>
+    <label for="commet">Post Commet</label>
+    <input type="text" class = 'form-control' name='comment' placeholder="Enter Comment here"> {% csrf_token %}
+    <input type="hidden" name='postSno' value="{{post.sno}}">
+    <input type="hidden" name="parentsno" value="">
+    <button type="submit" class="btn btn-primary my-2">Submit</button>
+  </form>
+  {% else %}
+  <p>Please login for enter the comment</p>
+  {% endif %}
+
+{% for comment in comments %}
+
+<div class="row my-2">
+  <div class="col-md-1"><img src="{% static 'index.jpg' %}" alt=""></div>
+  <div class="col-md-11"><b>{{comment.user|capfirst}}</b> at {{comment.timestamp}}
+  <div>{{comment.comment}}</div>
+    <div class="reply mx-0">
+      <p>
+        {% if user.is_authenticated %}
+        <a class="btn btn-primary my-4" data-bs-toggle="collapse" href="#replybox{{comment.sno}}" role="button" aria-expanded="false" aria-controls="replybox{{comment.sno}}">
+          Reply 
+        </a>
+        {% endif %}
+      </p>
+      <div class="collapse" id="replybox{{comment.sno}}">
+        <div class="card card-body my-2">
+          
+          <form action="/blog/postComment" method='post'>
+            <label for="commet">Post a Reply</label>
+            <input type="text" class = 'form-control' name='comment' placeholder="Enter Comment here"> {% csrf_token %}
+            <input type="hidden" name="parentSno" value= '{{comment.sno}}'>
+            <input type="hidden" name='postSno' value="{{post.sno}}">
+            <button type="submit" class="btn btn-primary my-2">Submit</button>
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+      <div class="replies">
+        {% comment %} Custom template filter  {% endcomment %}
+        {% for reply in replyDict|get_val:comment.sno %}
+        <div class="row">
+          <div class="col md-1">
+            <img src="/static/index.jpg" alt="user" class="w-100 p-2" />
+          </div>
+          <div class="col-md-11">
+            {% comment %} {{reply.comment}} {% endcomment %}
+            <b>{{reply.user.username}} at {{reply.timestamp}}</b>
+              <div>{{reply.comment}}</div>
+            <br> 
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+  </div>
+</div>
+
+{% endfor %}
+
+{% endblock body %}
